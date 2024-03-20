@@ -1,0 +1,37 @@
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Include Ansible vault
+      include_vars:
+        file: ../../vars/vault.yml
+        name: vault
+
+    - name: Install Docker
+      include_role:
+        name: geerlingguy.docker
+
+    - name: Install Docker-compose
+      include_role:
+        name: geerlingguy.pip
+      vars:
+        pip_install_packages:
+          - name: docker-compose
+
+    - name: Copy docker compose file to remote
+      copy:
+        src: ../Docker/docker-compose.yml
+        dest: /home/ubuntu/docker-compose.yml
+
+    - name: Run Docker Compose /home/ubuntu/docker-compose.yml
+      command: docker-compose -f /home/ubuntu/docker-compose.yml up -d
+      args:
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ vault.mysql_root_password }}"
+          MYSQL_DATABASE: "{{ vault.mysql_database }}"
+          MYSQL_USER: " {{ vault.mysql_user }}"
+          MYSQL_PASSWORD: " {{ vault.mysql_password }}"
+          WORDPRESS_DB_HOST: " {{ vault.wordpress_db_host }}"
+          WORDPRESS_DB_USER: " {{ vault.wordpress_db_user }}"
+          WORDPRESS_DB_PASSWORD: " {{ vault.wordpress_db_password }}"
+          WORDPRESS_DB_NAME: " {{ vault.wordpress_db_name }}"

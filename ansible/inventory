@@ -1,0 +1,2 @@
+[ec2_hosts]
+cloud_1_sejokim ansible_host=3.37.215.136 ansible_user=sejokim ansible_ssh_private_key_file=/Users/sejokim/Desktop/cloud_1_key.pem
