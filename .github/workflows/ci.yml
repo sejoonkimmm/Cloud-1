@@ -1,0 +1,28 @@
+name: CI Pipeline
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible
+
+    - name: Lint with Ansible Lint
+      run: ansible-lint
+
+    - name: Integration test
+      run |
+        docker-compose -f ./ansible/roles/docker/docker-compose.yml up -d
+        docker-compose -f ./ansible/roles/docker/docker-compose.yml down
