@@ -1,7 +1,11 @@
-FROM wordpress:latest
+FROM wordpress:6.4.3-php8.1-fpm
 
-COPY entrypoints.sh /entrypoints.sh
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp
 
-RUN chmod +x /entrypoints.sh
+COPY entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT ["entrypoints.sh", "db", "docker-entrypoint.sh"]
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["sh", "/entrypoint.sh"]
