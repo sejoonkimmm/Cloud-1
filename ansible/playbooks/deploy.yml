@@ -11,27 +11,49 @@
       include_role:
         name: geerlingguy.docker
 
-    - name: Install Docker-compose
-      include_role:
-        name: geerlingguy.pip
-      vars:
-        pip_install_packages:
-          - name: docker-compose
+    - name: Download Docker Compose binary
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system }}-{{ ansible_machine }}
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x'
 
-    - name: Copy docker compose file to remote
+    - name: Copy all Dockerfile
       copy:
-        src: ../Docker/docker-compose.yml
-        dest: /home/ubuntu/docker-compose.yml
+        src: ../roles/Docker
+        dest: /home/ubuntu
+        mode: preserve
 
-    - name: Run Docker Compose /home/ubuntu/docker-compose.yml
-      command: docker-compose -f /home/ubuntu/docker-compose.yml up -d
-      args:
-        env:
-          MYSQL_ROOT_PASSWORD: "{{ vault.mysql_root_password }}"
-          MYSQL_DATABASE: "{{ vault.mysql_database }}"
-          MYSQL_USER: " {{ vault.mysql_user }}"
-          MYSQL_PASSWORD: " {{ vault.mysql_password }}"
-          WORDPRESS_DB_HOST: " {{ vault.wordpress_db_host }}"
-          WORDPRESS_DB_USER: " {{ vault.wordpress_db_user }}"
-          WORDPRESS_DB_PASSWORD: " {{ vault.wordpress_db_password }}"
-          WORDPRESS_DB_NAME: " {{ vault.wordpress_db_name }}"
+    - name: Ensure python and pip are installed
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Upgrade Python packages with pip
+      pip:
+        name:
+          - "pyOpenSSL"
+          - "urllib3"
+          - "chardet"
+        state: latest
+      become: yes
+
+    - name: Run Docker Compose /home/ubuntu/Docker/docker-compose.yml
+      command: sudo docker-compose -f /home/ubuntu/Docker/docker-compose.yml up --build -d
+      environment:
+        MYSQL_ROOT_PASSWORD: "{{ vault.mysql_root_password }}"
+        MYSQL_DATABASE: "{{ vault.mysql_database }}"
+        MYSQL_USER: "{{ vault.mysql_user }}"
+        MYSQL_PASSWORD: "{{ vault.mysql_password }}"
+        WORDPRESS_DB_HOST: "{{ vault.wordpress_db_host }}"
+        WORDPRESS_DB_USER: "{{ vault.wordpress_db_user }}"
+        WORDPRESS_DB_PASSWORD: "{{ vault.wordpress_db_password }}"
+        WORDPRESS_DB_NAME: "{{ vault.wordpress_db_name }}"
+        PMA_HOST: "{{ vault.PMA_HOST }}"
+        PMA_USER: "{{ vault.PMA_USER }}"
+        PMA_PASSWORD: "{{ vault.PMA_PASSWORD }}"
+        PMA_ARBITRARY: "{{ vault.PMA_ARBITRARY }}"
+        SSL_PORT: "{{ vault.SSL_PORT }}"

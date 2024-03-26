@@ -23,6 +23,6 @@ jobs:
       run: ansible-lint
 
     - name: Integration test
-      run |
+      run: |
         docker-compose -f ./ansible/roles/docker/docker-compose.yml up -d
         docker-compose -f ./ansible/roles/docker/docker-compose.yml down
