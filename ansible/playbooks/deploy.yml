@@ -4,7 +4,7 @@
   tasks:
     - name: Include Ansible vault
       include_vars:
-        file: ../../vars/vault.yml
+        file: ../roles/vars/vault.yml
         name: vault
 
     - name: Install Docker
@@ -19,8 +19,8 @@
 
     - name: Copy all Dockerfile
       copy:
-        src: ../roles/Docker
-        dest: /home/ubuntu
+        src: ../roles/templates
+        dest: /home/{{ ansible_user }}
         mode: preserve
 
     - name: Ensure python and pip are installed
@@ -41,19 +41,11 @@
         state: latest
       become: yes
 
-    - name: Run Docker Compose /home/ubuntu/Docker/docker-compose.yml
-      command: sudo docker-compose -f /home/ubuntu/Docker/docker-compose.yml up --build -d
-      environment:
-        MYSQL_ROOT_PASSWORD: "{{ vault.mysql_root_password }}"
-        MYSQL_DATABASE: "{{ vault.mysql_database }}"
-        MYSQL_USER: "{{ vault.mysql_user }}"
-        MYSQL_PASSWORD: "{{ vault.mysql_password }}"
-        WORDPRESS_DB_HOST: "{{ vault.wordpress_db_host }}"
-        WORDPRESS_DB_USER: "{{ vault.wordpress_db_user }}"
-        WORDPRESS_DB_PASSWORD: "{{ vault.wordpress_db_password }}"
-        WORDPRESS_DB_NAME: "{{ vault.wordpress_db_name }}"
-        PMA_HOST: "{{ vault.PMA_HOST }}"
-        PMA_USER: "{{ vault.PMA_USER }}"
-        PMA_PASSWORD: "{{ vault.PMA_PASSWORD }}"
-        PMA_ARBITRARY: "{{ vault.PMA_ARBITRARY }}"
-        SSL_PORT: "{{ vault.SSL_PORT }}"
+    - name: Template the .env file
+      template:
+        src: ../roles/templates/.env.j2
+        dest: /home/{{ ansible_user }}/templates/.env
+
+    - name: Run Docker Compose
+      command: docker-compose -f /home/{{ ansible_user }}/templates/docker-compose.yml up --build -d
+      no_log: true

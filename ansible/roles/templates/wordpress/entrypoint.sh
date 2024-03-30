@@ -17,16 +17,16 @@ if ! $(wp core is-installed --allow-root); then
         --allow-root
     
     wp core install \
-        --url="localhost" \
-        --title="sejokim's cloud_1" \
-        --admin_user="sejokim" \
+        --url="${WORDPRESS_SITE_URL}" \
+        --title="${WORDPRESS_SITE_TITLE}" \
+        --admin_user="${WORDPRESS_ADMIN_USER}" \
         --admin_password="${MYSQL_ROOT_PASSWORD}" \
         --admin_email="sejojo@naver.com" \
         --path="/var/www/html" \
         --allow-root
 
     # Create a regular user
-    wp user create bibigo bibigo@cj.com --role=author --user_pass="securepass" --path="/var/www/html" --allow-root
+    wp user create "${WORDPRESS_USER_ID}" bibigo@cj.com --role=author --user_pass="${WORDPRESS_USER_PASSWORD}" --path="/var/www/html" --allow-root
 fi
 
 # Run the original entrypoint script
