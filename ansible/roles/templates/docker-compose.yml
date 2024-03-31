@@ -11,7 +11,8 @@ services:
     restart: always
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - wordpress_data:/var/www/html
+      - wordpress_data:/var/www/html/wordpress
+      - phpmyadmin_data:/var/www/html/phpmyadmin
     depends_on:
       - wordpress
     networks:
@@ -48,7 +49,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - wordpress_data:/var/www/html
+      - wordpress_data:/var/www/html/wordpress
     networks:
       - cloud_1_network
 
@@ -58,9 +59,11 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - '8080:80'
+      - '8080:8080'
     env_file:
       - .env
+    volumes:
+      - phpmyadmin_data:/var/www/html
     depends_on:
       - db
     networks:

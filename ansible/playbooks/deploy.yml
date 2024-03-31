@@ -49,3 +49,5 @@
     - name: Run Docker Compose
       command: docker-compose -f /home/{{ ansible_user }}/templates/docker-compose.yml up --build -d
       no_log: true
+
+- hosts: cloud_1
