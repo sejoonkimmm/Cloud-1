@@ -1,0 +1,17 @@
+- name: destroy all containers
+  hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: docker compose down
+      ansible.builtin.command:
+        cmd: "docker-compose -f /home/{{ ansible_user }}/templates/docker-compose.yml down -v"
+      ignore_errors: yes
+
+    - name: remove docker directory
+      ansible.builtin.file:
+        path: /home/{{ ansible_user }}/templates
+        state: absent
+      ignore_errors: yes
+

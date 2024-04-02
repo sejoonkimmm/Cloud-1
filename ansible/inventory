@@ -1,3 +1,3 @@
 [cloud_instances]
-cloud-1 ansible_host=44.203.150.117 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/cloud_1
-cloud-2 ansible_host=10.14.250.150 ansible_user=sejokim ansible_ssh_private_key_file=~/.ssh/cloud_2
+cloud-1 ansible_host=54.180.18.85 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/cloud_1.pem
+cloud-2 ansible_host=10.14.250.146 ansible_user=sejokim ansible_ssh_private_key_file=~/.ssh/cloud_2
